@@ -4,15 +4,58 @@ import { formatCompact, sortByDate, totalComp } from "./calculations";
 
 const WIDTH = 1200;
 const HEIGHT = 630;
-const MAX_BARS = 8;
-const BAR_AREA_HEIGHT = 260;
-const MIN_BAR_HEIGHT = 24;
+const MAX_POINTS = 8;
+const CHART_HEIGHT = 460;
+const CHART_TOP_PCT = 38;
+const CHART_BOTTOM_PCT = 10;
+const DOT_SIZE = 18;
+const DOT_RADIUS = DOT_SIZE / 2;
+
+const STATUS_GOOD = "#0ca30c";
+const SERIES_2 = "#d95926";
+const SERIES_1 = "#3987e5";
 
 function colorForType(type: EntryType): string {
-  if (type === "promotion") return "#0ca30c";
-  if (type === "relocation") return "#eb6834";
-  return "#2a78d6";
+  if (type === "promotion") return STATUS_GOOD;
+  if (type === "relocation") return SERIES_2;
+  return SERIES_1;
 }
+
+// Plain inline SVGs (not lucide-react components) — Satori's JSX renderer has no
+// active hook dispatcher, and lucide-react icons use a context hook internally.
+type IconProps = { size: number; color: string };
+
+function StarIcon({ size, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2}>
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </svg>
+  );
+}
+
+function MapPinIcon({ size, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2}>
+      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function BriefcaseIcon({ size, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2}>
+      <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+      <rect width="20" height="14" x="2" y="6" rx="2" />
+    </svg>
+  );
+}
+
+const TYPE_ICON: Partial<Record<EntryType, (props: IconProps) => React.JSX.Element>> = {
+  promotion: StarIcon,
+  relocation: MapPinIcon,
+  new_job: BriefcaseIcon,
+};
 
 export function renderTimelineImage(params: {
   title: string;
@@ -20,22 +63,34 @@ export function renderTimelineImage(params: {
   currency: string;
   entries: CompEntry[];
 }) {
-  const { title, note, currency, entries } = params;
+  const { currency, entries } = params;
   const sorted = sortByDate(entries);
-  const shown = sorted.slice(-MAX_BARS);
+  const shown = sorted.slice(-MAX_POINTS);
+  const n = shown.length;
 
   const values = shown.map(totalComp);
-  const min = Math.min(...values, 0);
-  const max = Math.max(...values, 1);
-  const range = max - min || 1;
+  const logValues = values.map((v) => Math.log(Math.max(v, 1)));
+  const minLog = n > 0 ? Math.min(...logValues) : 0;
+  const maxLog = n > 0 ? Math.max(...logValues) : 0;
+  const rangeLog = maxLog - minLog || 1;
 
-  const years = sorted.map((e) => new Date(e.date).getFullYear());
-  const yearRange =
-    years.length === 0
-      ? ""
-      : Math.min(...years) === Math.max(...years)
-        ? `${Math.min(...years)}`
-        : `${Math.min(...years)} – ${Math.max(...years)}`;
+  const points = shown.map((entry, i) => {
+    const value = totalComp(entry);
+    const logValue = Math.log(Math.max(value, 1));
+    const x = n === 1 ? 50 : ((i + 0.5) / n) * 100;
+    const y = CHART_TOP_PCT + (1 - (logValue - minLog) / rangeLog) * (100 - CHART_TOP_PCT - CHART_BOTTOM_PCT);
+    return {
+      entry,
+      value,
+      x,
+      y,
+      color: colorForType(entry.type),
+      Icon: TYPE_ICON[entry.type],
+      dateLabel: new Date(entry.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+    };
+  });
+
+  const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
 
   return new ImageResponse(
     (
@@ -45,106 +100,112 @@ export function renderTimelineImage(params: {
           height: HEIGHT,
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#fcfcfb",
-          padding: 64,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#1a1a19",
+          padding: 48,
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div
-            style={{
-              fontSize: 44,
-              fontWeight: 800,
-              letterSpacing: -1,
-              textTransform: "uppercase",
-              color: "#0b0b0b",
-              display: "flex",
-            }}
-          >
-            {title || "Salary Progression"}
-          </div>
-          {yearRange && (
-            <div style={{ fontSize: 20, color: "#52514e", marginTop: 8, display: "flex" }}>{yearRange}</div>
-          )}
-        </div>
-
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            gap: 24,
-            marginTop: 32,
-          }}
-        >
-          {shown.map((entry) => {
-            const value = totalComp(entry);
-            const color = colorForType(entry.type);
-            const barHeight = MIN_BAR_HEIGHT + ((value - min) / range) * (BAR_AREA_HEIGHT - MIN_BAR_HEIGHT);
-            const dateLabel = new Date(entry.date).toLocaleDateString("en-US", {
-              month: "short",
-              year: "numeric",
-            });
-
-            return (
-              <div
-                key={entry.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  width: 108,
-                }}
+        {n === 0 ? (
+          <div style={{ display: "flex", fontSize: 28, color: "#898781" }}>No career events yet.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <div style={{ position: "relative", display: "flex", width: "100%", height: CHART_HEIGHT }}>
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
               >
+                <polyline points={polylinePoints} fill="none" stroke={SERIES_1} strokeWidth={0.6} />
+              </svg>
+
+              {points.map((p) => {
+                const Icon = p.Icon;
+                const connectorHeight = Math.max(CHART_HEIGHT * (1 - p.y / 100) - DOT_RADIUS, 0);
+
+                return (
+                  <div
+                    key={p.entry.id}
+                    style={{
+                      position: "absolute",
+                      left: `${p.x}%`,
+                      top: `${p.y}%`,
+                      display: "flex",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        width: DOT_SIZE,
+                        height: DOT_SIZE,
+                        borderRadius: 999,
+                        background: p.color,
+                        border: "3px solid #1a1a19",
+                      }}
+                    />
+                    <div
+                      style={{
+                        display: "flex",
+                        position: "absolute",
+                        top: DOT_SIZE,
+                        left: "50%",
+                        width: 0,
+                        height: connectorHeight,
+                        borderLeft: "2.5px dashed #383835",
+                      }}
+                    />
+                    <div
+                      style={{
+                        display: "flex",
+                        position: "absolute",
+                        bottom: DOT_SIZE + 12,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      {Icon && <Icon size={26} color={p.color} />}
+                      <div
+                        style={{
+                          display: "flex",
+                          color: "#ffffff",
+                          background: p.color,
+                          fontSize: 24,
+                          fontWeight: 700,
+                          padding: "8px 16px",
+                          borderRadius: 10,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatCompact(p.value, currency)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "row", marginTop: 24 }}>
+              {points.map((p) => (
                 <div
+                  key={p.entry.id}
                   style={{
                     display: "flex",
+                    flex: 1,
+                    justifyContent: "center",
+                    fontSize: 22,
+                    fontWeight: 600,
                     color: "#ffffff",
-                    background: color,
-                    fontSize: 16,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 8,
-                    marginBottom: 10,
-                    whiteSpace: "nowrap",
                   }}
                 >
-                  {formatCompact(value, currency)}
+                  {p.dateLabel}
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    width: 40,
-                    height: barHeight,
-                    background: color,
-                    borderRadius: "8px 8px 0 0",
-                  }}
-                />
-                <div style={{ display: "flex", fontSize: 14, fontWeight: 600, color: "#52514e", marginTop: 10 }}>
-                  {dateLabel}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {note.trim() && (
-          <div
-            style={{
-              display: "flex",
-              fontSize: 18,
-              color: "#0b0b0b",
-              background: "rgba(42, 120, 214, 0.08)",
-              border: "2px dashed #2a78d6",
-              borderRadius: 10,
-              padding: "14px 20px",
-              marginTop: 24,
-            }}
-          >
-            {note.length > 140 ? `${note.slice(0, 140)}…` : note}
+              ))}
+            </div>
           </div>
         )}
       </div>
