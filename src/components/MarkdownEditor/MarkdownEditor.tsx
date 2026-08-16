@@ -1,6 +1,21 @@
 "use client";
 
-import { Bold, Check, Code, Eye, Heading2, Italic, Link, List, ListOrdered, Maximize2, Pencil, Quote, X } from "lucide-react";
+import {
+  Bold,
+  Check,
+  Code,
+  Eye,
+  Heading2,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  Maximize2,
+  Pencil,
+  Quote,
+  Smile,
+  X,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -13,6 +28,8 @@ interface MarkdownEditorProps {
   onSave?: () => void;
   onDiscard?: () => void;
   hasChanges?: boolean;
+  /** Optional starter structure offered (via an "Insert template" button) only while the field is empty. */
+  template?: string;
 }
 
 type Mode = "write" | "preview";
@@ -25,12 +42,20 @@ export default function MarkdownEditor({
   onSave,
   onDiscard,
   hasChanges,
+  template,
 }: MarkdownEditorProps) {
   const [mode, setMode] = useState<Mode>("write");
   const [fullscreen, setFullscreen] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const writeRef = useRef<HTMLTextAreaElement>(null);
   const fullscreenWriteRef = useRef<HTMLTextAreaElement>(null);
+  const showTemplateButton = Boolean(template) && value.trim() === "";
+
+  function insertTemplate() {
+    if (!template) return;
+    onChange(template);
+    setMode("write");
+  }
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -59,16 +84,28 @@ export default function MarkdownEditor({
               Preview
             </TabButton>
           </div>
-          <button
-            type="button"
-            onClick={() => setFullscreen(true)}
-            aria-label="Open fullscreen editor"
-            title="Open fullscreen editor (write and preview side by side)"
-            className="flex items-center justify-center rounded-md border p-1.5"
-            style={{ borderColor: "var(--gridline)", color: "var(--text-secondary)" }}
-          >
-            <Maximize2 size={13} />
-          </button>
+          <div className="flex items-center gap-2">
+            {showTemplateButton && (
+              <button
+                type="button"
+                onClick={insertTemplate}
+                className="rounded-md border px-2 py-1 text-xs font-medium"
+                style={{ borderColor: "var(--gridline)", color: "var(--text-secondary)" }}
+              >
+                Insert template
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setFullscreen(true)}
+              aria-label="Open fullscreen editor"
+              title="Open fullscreen editor (write and preview side by side)"
+              className="flex items-center justify-center rounded-md border p-1.5"
+              style={{ borderColor: "var(--gridline)", color: "var(--text-secondary)" }}
+            >
+              <Maximize2 size={13} />
+            </button>
+          </div>
         </div>
 
         {mode === "write" ? (
@@ -148,9 +185,21 @@ export default function MarkdownEditor({
               className="flex min-h-0 flex-col gap-2 border-b p-4 md:border-r md:border-b-0"
               style={{ borderColor: "var(--gridline)" }}
             >
-              <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
-                Write
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
+                  Write
+                </p>
+                {showTemplateButton && (
+                  <button
+                    type="button"
+                    onClick={insertTemplate}
+                    className="rounded-md border px-2 py-1 text-xs font-medium"
+                    style={{ borderColor: "var(--gridline)", color: "var(--text-secondary)" }}
+                  >
+                    Insert template
+                  </button>
+                )}
+              </div>
               <Toolbar textareaRef={fullscreenWriteRef} value={value} onChange={onChange} />
               <textarea
                 ref={fullscreenWriteRef}
@@ -293,7 +342,217 @@ function Toolbar({
           {item.icon}
         </button>
       ))}
+      <span className="mx-1 h-4 w-px" style={{ background: "var(--gridline)" }} />
+      <EmojiMenu textareaRef={textareaRef} value={value} onChange={onChange} />
     </div>
+  );
+}
+
+interface EmojiEntry {
+  emoji: string;
+  name: string;
+}
+
+interface EmojiGroup {
+  name: string;
+  emojis: EmojiEntry[];
+}
+
+const PANEL_WIDTH = 256;
+const PANEL_HEIGHT = 320;
+
+// Lazy-loaded (dynamic import) so the ~400KB emoji dataset only ships to the
+// client once someone actually opens the picker, and only fetched once per page.
+let emojiGroupsPromise: Promise<EmojiGroup[]> | null = null;
+function loadEmojiGroups(): Promise<EmojiGroup[]> {
+  if (!emojiGroupsPromise) {
+    emojiGroupsPromise = import("unicode-emoji-json/data-by-group.json").then(
+      (mod) => (mod.default ?? mod) as unknown as EmojiGroup[]
+    );
+  }
+  return emojiGroupsPromise;
+}
+
+function EmojiMenu({
+  textareaRef,
+  value,
+  onChange,
+}: {
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [groups, setGroups] = useState<EmojiGroup[] | null>(null);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    loadEmojiGroups().then(setGroups);
+
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const overflowsBottom = rect.bottom + PANEL_HEIGHT > window.innerHeight;
+    setPosition({
+      top: overflowsBottom ? Math.max(8, rect.top - PANEL_HEIGHT - 4) : rect.bottom + 4,
+      left: Math.min(rect.left, window.innerWidth - PANEL_WIDTH - 8),
+    });
+  }, [open]);
+
+  function close() {
+    setOpen(false);
+    setQuery("");
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    function handlePointerDown(e: MouseEvent) {
+      const target = e.target as Node;
+      if (panelRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
+      close();
+    }
+    // Scroll events don't bubble, but a capture-phase listener on window still
+    // sees them from any scrollable ancestor — used here to drop a
+    // viewport-anchored popover instead of letting it drift out of place.
+    // Scrolling the panel's own emoji list fires here too (its target is just
+    // deeper in the capture path), so that case is excluded explicitly.
+    function handleScroll(e: Event) {
+      // e.target is the window itself for a plain page scroll, not a Node.
+      if (e.target instanceof Node && panelRef.current?.contains(e.target)) return;
+      close();
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  function insert(emoji: string) {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newValue = value.slice(0, start) + emoji + value.slice(end);
+    onChange(newValue);
+    close();
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const pos = start + emoji.length;
+      textarea.setSelectionRange(pos, pos);
+    });
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered =
+    groups && normalizedQuery
+      ? groups.flatMap((g) => g.emojis).filter((e) => e.name.includes(normalizedQuery))
+      : null;
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-label="Insert emoji"
+        title="Insert emoji"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          if (open) close();
+          else setOpen(true);
+        }}
+        className="flex items-center justify-center rounded p-1.5"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        <Smile size={13} />
+      </button>
+      {open && position && (
+        <div
+          ref={panelRef}
+          role="menu"
+          style={{
+            position: "fixed",
+            top: position.top,
+            left: position.left,
+            width: PANEL_WIDTH,
+            borderColor: "var(--gridline)",
+            background: "var(--surface-1)",
+          }}
+          className="z-50 flex flex-col gap-1.5 rounded-md border p-2 shadow-lg"
+        >
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search emoji…"
+            autoFocus
+            className="input rounded px-2 py-1 text-xs"
+          />
+          <div className="max-h-56 overflow-y-auto">
+            {!groups ? (
+              <p className="p-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                Loading…
+              </p>
+            ) : filtered ? (
+              filtered.length === 0 ? (
+                <p className="p-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                  No emoji found.
+                </p>
+              ) : (
+                <div className="grid grid-cols-8 gap-0.5">
+                  {filtered.map((entry) => (
+                    <EmojiButton key={entry.emoji} entry={entry} onSelect={insert} />
+                  ))}
+                </div>
+              )
+            ) : (
+              groups.map((group) => (
+                <div key={group.name} className="mb-2">
+                  <p
+                    className="mb-1 px-0.5 text-[10px] font-semibold tracking-wide uppercase"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {group.name}
+                  </p>
+                  <div className="grid grid-cols-8 gap-0.5">
+                    {group.emojis.map((entry) => (
+                      <EmojiButton key={entry.emoji} entry={entry} onSelect={insert} />
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function EmojiButton({ entry, onSelect }: { entry: EmojiEntry; onSelect: (emoji: string) => void }) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      aria-label={`Insert ${entry.name}`}
+      title={entry.name}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onSelect(entry.emoji);
+      }}
+      className="flex items-center justify-center rounded p-1 text-base"
+    >
+      {entry.emoji}
+    </button>
   );
 }
 

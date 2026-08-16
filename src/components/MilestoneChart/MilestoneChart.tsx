@@ -65,7 +65,7 @@ export default function MilestoneChart({ entries, currency, title, note, slug, r
   if (n === 0) {
     return (
       <div
-        className="flex h-64 items-center justify-center rounded-lg border text-sm"
+        className="flex min-h-64 flex-1 items-center justify-center rounded-lg border text-sm"
         style={{ borderColor: "var(--gridline)", background: "var(--surface-1)", color: "var(--text-muted)" }}
       >
         Add career events to build your progression card.
