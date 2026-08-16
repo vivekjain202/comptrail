@@ -8,11 +8,12 @@ import SectionShareButton from "../SectionShareButton/SectionShareButton";
 interface LearningsSectionProps {
   learnings: string;
   slug?: string | null;
+  readOnly?: boolean;
 }
 
 const SECTION_ID = "learnings-section";
 
-export default function LearningsSection({ learnings, slug }: LearningsSectionProps) {
+export default function LearningsSection({ learnings, slug, readOnly = false }: LearningsSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!learnings.trim()) return null;
@@ -21,17 +22,19 @@ export default function LearningsSection({ learnings, slug }: LearningsSectionPr
     <div
       ref={containerRef}
       id={SECTION_ID}
-      className="relative scroll-mt-4 rounded-lg border p-5"
+      className="relative scroll-mt-20 rounded-lg border p-5"
       style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
     >
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
           Career Learnings
         </h2>
-        <div className="flex items-center gap-1.5" data-export-ignore>
-          <SectionShareButton slug={slug} anchor={SECTION_ID} />
-          <ExportMenu getNode={() => containerRef.current} filename="career-learnings" label="career learnings" />
-        </div>
+        {!readOnly && (
+          <div className="flex items-center gap-1.5" data-export-ignore>
+            <SectionShareButton slug={slug} anchor={SECTION_ID} />
+            <ExportMenu getNode={() => containerRef.current} filename="career-learnings" label="career learnings" />
+          </div>
+        )}
       </div>
       <MarkdownPreview value={learnings} />
     </div>

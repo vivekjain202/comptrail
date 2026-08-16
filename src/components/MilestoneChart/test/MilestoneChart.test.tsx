@@ -93,4 +93,10 @@ describe("MilestoneChart", () => {
     render(<MilestoneChart entries={entries} currency="USD" title="Career" note="   " />);
     expect(screen.queryByText("Note:")).not.toBeInTheDocument();
   });
+
+  it("hides the share and export actions in read-only mode", () => {
+    render(<MilestoneChart entries={entries} currency="USD" title="Career" note="" readOnly />);
+    expect(screen.queryByLabelText("Copy link to this section")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Download options for chart")).not.toBeInTheDocument();
+  });
 });
