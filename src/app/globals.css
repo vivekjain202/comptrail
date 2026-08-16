@@ -83,3 +83,11 @@ body {
   outline: 2px solid var(--series-1);
   outline-offset: 1px;
 }
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}

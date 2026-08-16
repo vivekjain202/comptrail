@@ -6,6 +6,7 @@ import Collapsible from "@/components/Collapsible";
 import EntryForm from "@/components/EntryForm";
 import EntryManagerList from "@/components/EntryManagerList";
 import MilestoneChart from "@/components/MilestoneChart";
+import PreviewExport from "@/components/PreviewExport";
 import SharePanel from "@/components/SharePanel";
 import StatsCards from "@/components/StatsCards";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -185,10 +186,18 @@ export default function Home() {
           <h2 className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
             Preview
           </h2>
-          <div className="flex flex-col gap-6 pb-6">
-            <StatsCards entries={entries} currency={currency} />
-            <MilestoneChart entries={entries} currency={currency} title={cardTitle} note={timelineNote} />
-            <TimelineView entries={entries} currency={currency} />
+          <div className="pb-6">
+            <PreviewExport filename={`${cardTitle}-full-preview`}>
+              <StatsCards entries={entries} currency={currency} />
+              <MilestoneChart
+                entries={entries}
+                currency={currency}
+                title={cardTitle}
+                note={timelineNote}
+                slug={ownedSlug}
+              />
+              <TimelineView entries={entries} currency={currency} title={cardTitle} slug={ownedSlug} />
+            </PreviewExport>
           </div>
         </section>
       </div>

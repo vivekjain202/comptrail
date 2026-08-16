@@ -1,6 +1,9 @@
 "use client";
 
 import { Briefcase, Gift, Lightbulb, MapPin, Star } from "lucide-react";
+import { useRef } from "react";
+import ExportMenu from "./ExportMenu";
+import SectionShareButton from "./SectionShareButton";
 import { CompEntry, EntryType } from "@/lib/types";
 import { formatCompact, sortByDate, totalComp } from "@/lib/calculations";
 
@@ -9,7 +12,10 @@ interface MilestoneChartProps {
   currency: string;
   title: string;
   note: string;
+  slug?: string | null;
 }
+
+const SECTION_ID = "chart-section";
 
 const TYPE_ICON: Partial<Record<EntryType, typeof Star>> = {
   promotion: Star,
@@ -25,8 +31,11 @@ function colorForType(type: EntryType): string {
 
 const CHART_TOP_PCT = 40;
 const CHART_BOTTOM_PCT = 12;
+const CHART_HEIGHT_PX = 220;
+const DOT_RADIUS_PX = 6;
 
-export default function MilestoneChart({ entries, currency, title, note }: MilestoneChartProps) {
+export default function MilestoneChart({ entries, currency, title, note, slug }: MilestoneChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const sorted = sortByDate(entries);
   const n = sorted.length;
 
@@ -42,15 +51,22 @@ export default function MilestoneChart({ entries, currency, title, note }: Miles
   }
 
   const values = sorted.map(totalComp);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
+  // Comp typically grows multiplicatively (raises/promotions are %-based), and can
+  // span very different orders of magnitude across a long career. A linear scale
+  // squashes early, smaller values together and can hide real growth between them,
+  // so we position points on a log scale — each step then reflects relative (%)
+  // growth rather than absolute distance from the largest value.
+  const logValues = values.map((v) => Math.log(Math.max(v, 1)));
+  const minLog = Math.min(...logValues);
+  const maxLog = Math.max(...logValues);
+  const rangeLog = maxLog - minLog || 1;
 
   const points = sorted.map((entry, i) => {
     const value = totalComp(entry);
+    const logValue = Math.log(Math.max(value, 1));
     const x = n === 1 ? 50 : ((i + 0.5) / n) * 100;
     const y =
-      CHART_TOP_PCT + (1 - (value - min) / range) * (100 - CHART_TOP_PCT - CHART_BOTTOM_PCT);
+      CHART_TOP_PCT + (1 - (logValue - minLog) / rangeLog) * (100 - CHART_TOP_PCT - CHART_BOTTOM_PCT);
     return {
       entry,
       value,
@@ -75,7 +91,16 @@ export default function MilestoneChart({ entries, currency, title, note }: Miles
   const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
-    <div className="rounded-lg border p-5 sm:p-6" style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}>
+    <div
+      ref={containerRef}
+      id={SECTION_ID}
+      className="relative scroll-mt-4 rounded-lg border p-5 sm:p-6"
+      style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
+    >
+      <div className="absolute top-3 right-3 flex items-center gap-1.5" data-export-ignore>
+        <SectionShareButton slug={slug} anchor={SECTION_ID} />
+        <ExportMenu getNode={() => containerRef.current} filename={`${title}-chart`} label="chart" />
+      </div>
       <div className="mb-1 text-center">
         <h2
           className="text-lg font-extrabold tracking-tight uppercase sm:text-xl"
@@ -103,7 +128,7 @@ export default function MilestoneChart({ entries, currency, title, note }: Miles
 
       <div className="overflow-x-auto">
         <div style={{ minWidth: `${Math.max(n * 130, 480)}px` }}>
-          <div className="relative" style={{ height: 220 }}>
+          <div className="relative" style={{ height: CHART_HEIGHT_PX }}>
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -120,33 +145,43 @@ export default function MilestoneChart({ entries, currency, title, note }: Miles
               />
             </svg>
 
-            {points.map((p) => (
-              <div
-                key={p.entry.id}
-                className="absolute"
-                style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
-              >
+            {points.map((p) => {
+              const connectorHeight = Math.max(
+                CHART_HEIGHT_PX * (1 - p.y / 100) - DOT_RADIUS_PX,
+                0
+              );
+
+              return (
                 <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ background: p.color, boxShadow: "0 0 0 2px var(--surface-1)" }}
-                />
-                <div className="absolute bottom-full left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 pb-2">
-                  {p.Icon && <p.Icon size={14} style={{ color: p.color }} />}
-                  <span
-                    className="whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-bold text-white"
-                    style={{ background: p.color }}
-                  >
-                    {formatCompact(p.value, currency)}
-                  </span>
+                  key={p.entry.id}
+                  className="absolute"
+                  style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
+                >
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ background: p.color, boxShadow: "0 0 0 2px var(--surface-1)" }}
+                  />
+                  <div
+                    className="absolute top-full left-1/2 border-l border-dashed"
+                    style={{ height: connectorHeight, borderColor: "var(--text-muted)" }}
+                  />
+                  <div className="absolute bottom-full left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 pb-2">
+                    {p.Icon && <p.Icon size={14} style={{ color: p.color }} />}
+                    <span
+                      className="whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-bold text-white"
+                      style={{ background: p.color }}
+                    >
+                      {formatCompact(p.value, currency)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
             {points.map((p) => (
               <div key={p.entry.id} className="flex flex-col items-center px-1 text-center">
-                <div className="h-4 border-l border-dashed" style={{ borderColor: "var(--baseline)" }} />
                 <p className="mt-1 text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
                   {p.dateLabel}
                 </p>
