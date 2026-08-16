@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import BaseEquityChart from "@/components/BaseEquityChart/BaseEquityChart";
 import Footer from "@/components/Footer/Footer";
 import LearningsSection from "@/components/LearningsSection/LearningsSection";
 import MilestoneChart from "@/components/MilestoneChart/MilestoneChart";
@@ -84,6 +85,13 @@ export default async function PublicTimelinePage({
             currency={row.currency}
             title={row.title}
             note={row.note}
+            slug={slug}
+            readOnly
+          />
+          <BaseEquityChart
+            entries={row.entries}
+            currency={row.currency}
+            title={row.title}
             slug={slug}
             readOnly
           />

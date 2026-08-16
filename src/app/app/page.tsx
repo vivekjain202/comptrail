@@ -3,6 +3,7 @@
 import { CircleAlert, House, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import BaseEquityChart from "@/components/BaseEquityChart/BaseEquityChart";
 import CardDetailsForm from "@/components/CardDetailsForm/CardDetailsForm";
 import Collapsible from "@/components/Collapsible/Collapsible";
 import EntryForm from "@/components/EntryForm/EntryForm";
@@ -276,6 +277,7 @@ export default function Home() {
                 note={timelineNote}
                 slug={ownedSlug}
               />
+              <BaseEquityChart entries={entries} currency={currency} title={cardTitle} slug={ownedSlug} />
               <TimelineView entries={entries} currency={currency} title={cardTitle} slug={ownedSlug} />
               <LearningsSection learnings={learnings} slug={ownedSlug} />
             </PreviewExport>
