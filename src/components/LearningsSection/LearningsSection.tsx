@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import ExportMenu from "./ExportMenu";
-import { MarkdownPreview } from "./MarkdownEditor";
-import SectionShareButton from "./SectionShareButton";
+import ExportMenu from "../ExportMenu/ExportMenu";
+import { MarkdownPreview } from "../MarkdownEditor/MarkdownEditor";
+import SectionShareButton from "../SectionShareButton/SectionShareButton";
 
 interface LearningsSectionProps {
   learnings: string;

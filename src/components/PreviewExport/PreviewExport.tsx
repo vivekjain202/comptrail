@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import ExportMenu from "./ExportMenu";
+import ExportMenu from "../ExportMenu/ExportMenu";
 
 interface PreviewExportProps {
   filename: string;
