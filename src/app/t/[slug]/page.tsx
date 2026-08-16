@@ -12,6 +12,7 @@ import TimelineView from "@/components/TimelineView/TimelineView";
 import ViewTracker from "@/components/ViewTracker/ViewTracker";
 import { getDb } from "@/db/client";
 import { timelines } from "@/db/schema";
+import { buildTimelineDescriptions } from "@/lib/seo-description";
 
 async function getTimeline(slug: string) {
   const db = getDb();
@@ -30,21 +31,27 @@ export async function generateMetadata({
     return { title: "Salary Progression" };
   }
 
-  const description = row.note || "A shared salary progression timeline.";
+  const { meta: metaDescription, social: socialDescription } = buildTimelineDescriptions(
+    row.title,
+    row.note,
+    row.entries
+  );
   const imageUrl = `/api/timelines/${slug}/image`;
 
   return {
     title: `${row.title} · Salary Progression`,
-    description,
+    description: metaDescription,
     openGraph: {
       title: row.title,
-      description,
+      description: socialDescription,
+      siteName: "Salary Progression",
+      type: "website",
       images: [{ url: imageUrl, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: row.title,
-      description,
+      description: socialDescription,
       images: [imageUrl],
     },
   };
