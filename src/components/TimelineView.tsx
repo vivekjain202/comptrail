@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import CompBreakdownTooltip from "./CompBreakdownTooltip";
 import ExportMenu from "./ExportMenu";
 import SectionShareButton from "./SectionShareButton";
 import { CompEntry, ENTRY_TYPE_LABELS } from "@/lib/types";
@@ -74,9 +75,26 @@ export default function TimelineView({ entries, currency, title = "Salary Progre
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    {formatCurrency(totalComp(entry), currency)}
-                  </p>
+                  <div
+                    className="group relative inline-block"
+                    tabIndex={0}
+                    aria-label={`${entry.title} compensation breakdown`}
+                  >
+                    <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                      {formatCurrency(totalComp(entry), currency)}
+                    </p>
+                    <div
+                      className="pointer-events-none absolute top-1/2 left-full z-20 ml-3 -translate-y-1/2 rounded-lg border px-3 py-2 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus:opacity-100"
+                      style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
+                      data-export-ignore
+                    >
+                      <div
+                        className="absolute top-1/2 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-l"
+                        style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
+                      />
+                      <CompBreakdownTooltip entry={entry} currency={currency} />
+                    </div>
+                  </div>
                   {change !== null && (
                     <p
                       className="text-xs font-medium"
