@@ -8,7 +8,7 @@ test("landing page introduces the product and opens the timeline builder", async
 
   await page.getByRole("link", { name: /build your timeline/i }).click();
   await expect(page).toHaveURL(/\/app$/);
-  await expect(page.getByRole("heading", { name: "Salary Progression" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "CompTrail" })).toBeVisible();
 });
 
 test("a creator can add career events and see progression statistics", async ({ page }) => {

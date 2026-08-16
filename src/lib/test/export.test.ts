@@ -62,7 +62,7 @@ describe("export", () => {
     await downloadElementAsPng(node, "!!!");
 
     const link = clickSpy.mock.instances[0] as unknown as HTMLAnchorElement;
-    expect(link.download).toBe("salary-progression.png");
+    expect(link.download).toBe("comptrail.png");
   });
 
   it("downloads a landscape PDF sized to the captured node and slugified filename", async () => {

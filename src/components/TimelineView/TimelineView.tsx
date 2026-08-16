@@ -20,7 +20,7 @@ const SECTION_ID = "timeline-section";
 export default function TimelineView({
   entries,
   currency,
-  title = "Salary Progression",
+  title = "CompTrail",
   slug,
   readOnly = false,
 }: TimelineViewProps) {

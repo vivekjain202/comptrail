@@ -107,7 +107,7 @@ test("a returning owner can update their saved timeline", async ({ page }) => {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
-        title: "Salary Progression",
+        title: "CompTrail",
         note: "",
         learnings: "",
         currency: "USD",
@@ -118,7 +118,7 @@ test("a returning owner can update their saved timeline", async ({ page }) => {
   });
 
   await page.addInitScript(() => {
-    localStorage.setItem("salary-progression:timeline:my-career", "test-edit-token");
+    localStorage.setItem("comptrail:timeline:my-career", "test-edit-token");
   });
 
   await page.goto("/app?slug=my-career");

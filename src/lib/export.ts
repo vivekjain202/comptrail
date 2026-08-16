@@ -31,7 +31,7 @@ function triggerDownload(dataUrl: string, filename: string) {
 }
 
 function slugifyFilename(name: string): string {
-  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "salary-progression";
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "comptrail";
 }
 
 export async function downloadElementAsPng(node: HTMLElement, filename: string) {

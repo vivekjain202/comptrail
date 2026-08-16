@@ -18,11 +18,11 @@ const SITE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Salary Progression",
+  title: "CompTrail",
   description:
     "Build and share your career salary progression timeline — track every raise, promotion, and job change, then share a link or export it as an image or PDF.",
   openGraph: {
-    siteName: "Salary Progression",
+    siteName: "CompTrail",
     type: "website",
     description:
       "Track every raise, promotion, and job change in one clear salary timeline, then share a link or export it as an image or PDF.",

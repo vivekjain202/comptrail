@@ -233,7 +233,7 @@ export function renderTimelineImage(params: {
             color: "#ffffff",
           }}
         >
-          <span style={{ display: "flex" }}>View the full salary progression</span>
+          <span style={{ display: "flex" }}>View the full timeline on CompTrail</span>
           <span style={{ display: "flex", color: SERIES_1 }}>→</span>
         </div>
       </div>

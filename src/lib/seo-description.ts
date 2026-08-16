@@ -4,8 +4,8 @@ import { CompEntry } from "./types";
 // Long enough on its own (126 chars) that appending it to even a very short
 // base still clears the 120-char meta-description minimum.
 const LONG_PITCH =
-  "Built with Salary Progression, a free tool to track and share how your compensation has grown over time — no account required.";
-const SHORT_PITCH = "Built with Salary Progression — track and share your career growth.";
+  "Built with CompTrail, a free tool to track and share how your compensation has grown over time — no account required.";
+const SHORT_PITCH = "Built with CompTrail — a free tool to track and share your career growth.";
 
 // Search engines and social platforms recommend different lengths for the plain
 // meta description (~120-160 chars) vs. the og/twitter card description

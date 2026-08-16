@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 describe("SiteHeader", () => {
   it("links the logo back to the homepage", () => {
     render(<SiteHeader />);
-    expect(screen.getByRole("link", { name: "Salary Progression" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "CompTrail" })).toHaveAttribute("href", "/");
   });
 
   it("links to the app builder", () => {

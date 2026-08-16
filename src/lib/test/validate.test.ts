@@ -38,7 +38,7 @@ describe("parseTimelinePayload", () => {
       title: 42,
     });
 
-    expect(payload.title).toBe("Salary Progression");
+    expect(payload.title).toBe("CompTrail");
     expect(payload.currency).toBe("USD");
     expect(payload.entries[0]).toMatchObject({
       id: "entry-0",

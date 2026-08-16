@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 const LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/vivek-jain-16957a56/" },
   { label: "Discord", href: "https://discord.com/users/vivek0372" },
-  { label: "Report an issue", href: "https://github.com/vivekjain202/salary-progression/issues/new" },
+  { label: "Report an issue", href: "https://github.com/vivekjain202/comptrail/issues/new" },
 ];
 
 export default function Footer() {

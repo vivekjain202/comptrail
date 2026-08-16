@@ -12,7 +12,7 @@ export default function SiteHeader({ sticky = false }: SiteHeaderProps) {
       style={{ borderColor: "var(--gridline)", background: "var(--background)" }}
     >
       <Link href="/" className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-        Salary Progression
+        CompTrail
       </Link>
       <div className="flex items-center gap-3">
         <ThemeToggle />
