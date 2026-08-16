@@ -5,7 +5,7 @@ import { formatCompact, sortByDate, totalComp } from "./calculations";
 const WIDTH = 1200;
 const HEIGHT = 630;
 const MAX_POINTS = 8;
-const CHART_HEIGHT = 460;
+const CHART_HEIGHT = 410;
 const CHART_TOP_PCT = 38;
 const CHART_BOTTOM_PCT = 10;
 const DOT_SIZE = 18;
@@ -102,8 +102,12 @@ export function renderTimelineImage(params: {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          position: "relative",
           backgroundColor: "#1a1a19",
-          padding: 48,
+          paddingTop: 48,
+          paddingLeft: 48,
+          paddingRight: 48,
+          paddingBottom: 88,
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
@@ -208,6 +212,25 @@ export function renderTimelineImage(params: {
             </div>
           </div>
         )}
+
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            bottom: 28,
+            left: 0,
+            right: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            fontSize: 20,
+            fontWeight: 600,
+            color: "#ffffff",
+          }}
+        >
+          <span style={{ display: "flex" }}>View the full salary progression</span>
+          <span style={{ display: "flex", color: SERIES_1 }}>→</span>
+        </div>
       </div>
     ),
     { width: WIDTH, height: HEIGHT }

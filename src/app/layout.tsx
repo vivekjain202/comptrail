@@ -12,9 +12,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Salary Progression",
-  description: "Build and share your career salary progression timeline.",
+  description:
+    "Build and share your career salary progression timeline — track every raise, promotion, and job change, then share a link or export it as an image or PDF.",
+  openGraph: {
+    siteName: "Salary Progression",
+    type: "website",
+    description:
+      "Track every raise, promotion, and job change in one clear salary timeline, then share a link or export it as an image or PDF.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    description:
+      "Track every raise, promotion, and job change in one clear salary timeline, then share a link or export it as an image or PDF.",
+  },
 };
 
 const THEME_INIT_SCRIPT = `
