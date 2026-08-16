@@ -1,7 +1,8 @@
 "use client";
 
 import { Briefcase, Gift, Lightbulb, MapPin, Star } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import CompBreakdownTooltip from "./CompBreakdownTooltip";
 import ExportMenu from "./ExportMenu";
 import SectionShareButton from "./SectionShareButton";
 import { CompEntry, EntryType } from "@/lib/types";
@@ -36,8 +37,29 @@ const DOT_RADIUS_PX = 6;
 
 export default function MilestoneChart({ entries, currency, title, note, slug }: MilestoneChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState<{
+    entry: CompEntry;
+    x: number;
+    y: number;
+    side: "left" | "right";
+  } | null>(null);
   const sorted = sortByDate(entries);
   const n = sorted.length;
+
+  const TOOLTIP_GAP_PX = 14;
+
+  function showTooltip(entry: CompEntry, wrapper: HTMLElement, side: "left" | "right") {
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
+    const badge = wrapper.querySelector<HTMLElement>("[data-comp-badge]") ?? wrapper;
+    const rect = badge.getBoundingClientRect();
+    setHovered({
+      entry,
+      x: (side === "right" ? rect.right + TOOLTIP_GAP_PX : rect.left - TOOLTIP_GAP_PX) - containerRect.left,
+      y: rect.top + rect.height / 2 - containerRect.top,
+      side,
+    });
+  }
 
   if (n === 0) {
     return (
@@ -151,11 +173,19 @@ export default function MilestoneChart({ entries, currency, title, note, slug }:
                 0
               );
 
+              const tooltipSide: "left" | "right" = p.x > 55 ? "left" : "right";
+
               return (
                 <div
                   key={p.entry.id}
                   className="absolute"
                   style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
+                  tabIndex={0}
+                  aria-label={`${p.entry.title} compensation breakdown`}
+                  onMouseEnter={(e) => showTooltip(p.entry, e.currentTarget, tooltipSide)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={(e) => showTooltip(p.entry, e.currentTarget, tooltipSide)}
+                  onBlur={() => setHovered(null)}
                 >
                   <div
                     className="h-3 w-3 rounded-full"
@@ -168,6 +198,7 @@ export default function MilestoneChart({ entries, currency, title, note, slug }:
                   <div className="absolute bottom-full left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 pb-2">
                     {p.Icon && <p.Icon size={14} style={{ color: p.color }} />}
                     <span
+                      data-comp-badge
                       className="whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-bold text-white"
                       style={{ background: p.color }}
                     >
@@ -204,6 +235,32 @@ export default function MilestoneChart({ entries, currency, title, note, slug }:
           </div>
         </div>
       </div>
+
+      {hovered && (
+        <div
+          className="pointer-events-none absolute z-20 rounded-lg border px-3 py-2 shadow-lg"
+          style={{
+            left: hovered.x,
+            top: hovered.y,
+            transform: `translate(${hovered.side === "left" ? "-100%" : "0"}, -50%)`,
+            borderColor: "var(--gridline)",
+            background: "var(--surface-1)",
+          }}
+          data-export-ignore
+        >
+          <div
+            className={`absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 ${
+              hovered.side === "right" ? "border-l border-b" : "border-r border-t"
+            }`}
+            style={{
+              [hovered.side === "right" ? "left" : "right"]: "-5px",
+              borderColor: "var(--gridline)",
+              background: "var(--surface-1)",
+            }}
+          />
+          <CompBreakdownTooltip entry={hovered.entry} currency={currency} />
+        </div>
+      )}
 
       {note.trim() && (
         <div
