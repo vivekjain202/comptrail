@@ -1,6 +1,6 @@
 "use client";
 
-import { House } from "lucide-react";
+import { CircleAlert, House, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CardDetailsForm from "@/components/CardDetailsForm";
@@ -8,6 +8,8 @@ import Collapsible from "@/components/Collapsible";
 import EntryForm from "@/components/EntryForm";
 import EntryManagerList from "@/components/EntryManagerList";
 import Footer from "@/components/Footer";
+import LearningsSection from "@/components/LearningsSection";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import MilestoneChart from "@/components/MilestoneChart";
 import PreviewExport from "@/components/PreviewExport";
 import SharePanel from "@/components/SharePanel";
@@ -25,15 +27,28 @@ export default function Home() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("manage");
   const [cardTitle, setCardTitle] = useState("Salary Progression");
   const [timelineNote, setTimelineNote] = useState("");
+  const [learnings, setLearnings] = useState("");
+  const [learningsDraft, setLearningsDraft] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [entryFormOpen, setEntryFormOpen] = useState(true);
 
   const [ownedSlug, setOwnedSlug] = useState<string | null>(null);
   const [ownedEditToken, setOwnedEditToken] = useState<string | null>(null);
+  const [viewCount, setViewCount] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState<string | null>(null);
 
   const editingEntry = entries.find((e) => e.id === editingId) ?? null;
+
+  const currentSnapshot = JSON.stringify({
+    title: cardTitle,
+    note: timelineNote,
+    learnings,
+    currency,
+    entries,
+  });
+  const hasUnsavedChanges = ownedSlug !== null && lastSavedSnapshot !== null && currentSnapshot !== lastSavedSnapshot;
 
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get("slug");
@@ -41,19 +56,42 @@ export default function Home() {
 
     fetch(`/api/timelines/${slug}`)
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { title: string; note: string; currency: string; entries: CompEntry[] } | null) => {
-        if (!data) return;
-        setEntries(data.entries);
-        setCardTitle(data.title);
-        setTimelineNote(data.note);
-        setCurrency(data.currency);
+      .then(
+        (
+          data: {
+            title: string;
+            note: string;
+            learnings: string;
+            currency: string;
+            entries: CompEntry[];
+            viewCount: number;
+          } | null
+        ) => {
+          if (!data) return;
+          setEntries(data.entries);
+          setCardTitle(data.title);
+          setTimelineNote(data.note);
+          setLearnings(data.learnings);
+          setLearningsDraft(data.learnings);
+          setCurrency(data.currency);
+          setViewCount(data.viewCount);
+          setLastSavedSnapshot(
+            JSON.stringify({
+              title: data.title,
+              note: data.note,
+              learnings: data.learnings,
+              currency: data.currency,
+              entries: data.entries,
+            })
+          );
 
-        const token = getEditToken(slug);
-        if (token) {
-          setOwnedSlug(slug);
-          setOwnedEditToken(token);
+          const token = getEditToken(slug);
+          if (token) {
+            setOwnedSlug(slug);
+            setOwnedEditToken(token);
+          }
         }
-      })
+      )
       .catch(() => {});
   }, []);
 
@@ -81,7 +119,7 @@ export default function Home() {
     setSaving(true);
     setSaveError(null);
     try {
-      const body = { title: cardTitle, note: timelineNote, currency, entries };
+      const body = { title: cardTitle, note: timelineNote, learnings, currency, entries };
       const res =
         ownedSlug && ownedEditToken
           ? await fetch(`/api/timelines/${ownedSlug}`, {
@@ -105,8 +143,10 @@ export default function Home() {
         saveEditToken(data.slug, data.editToken);
         setOwnedSlug(data.slug);
         setOwnedEditToken(data.editToken);
+        setViewCount(0);
         window.history.replaceState(null, "", `/app?slug=${data.slug}`);
       }
+      setLastSavedSnapshot(JSON.stringify(body));
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -161,7 +201,14 @@ export default function Home() {
           <h2 className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
             Manage
           </h2>
-          <SharePanel slug={ownedSlug} saving={saving} error={saveError} onSave={handleShareSave} />
+          <SharePanel
+            slug={ownedSlug}
+            viewCount={viewCount}
+            saving={saving}
+            error={saveError}
+            hasUnsavedChanges={hasUnsavedChanges}
+            onSave={handleShareSave}
+          />
           <Collapsible title="Card details" defaultOpen={false}>
             <CardDetailsForm
               title={cardTitle}
@@ -179,6 +226,17 @@ export default function Home() {
             onToggle={setEntryFormOpen}
           >
             <EntryForm onAdd={handleSave} editingEntry={editingEntry} onCancelEdit={() => setEditingId(null)} />
+          </Collapsible>
+
+          <Collapsible title="Career learnings" defaultOpen={false}>
+            <MarkdownEditor
+              value={learningsDraft}
+              onChange={setLearningsDraft}
+              onSave={() => setLearnings(learningsDraft)}
+              onDiscard={() => setLearningsDraft(learnings)}
+              hasChanges={learningsDraft !== learnings}
+              placeholder="What choices, skills, or decisions shaped your career? Markdown supported."
+            />
           </Collapsible>
 
           <EntryManagerList
@@ -210,11 +268,36 @@ export default function Home() {
                 slug={ownedSlug}
               />
               <TimelineView entries={entries} currency={currency} title={cardTitle} slug={ownedSlug} />
+              <LearningsSection learnings={learnings} slug={ownedSlug} />
             </PreviewExport>
           </div>
           <Footer />
         </section>
       </div>
+
+      {hasUnsavedChanges && (
+        <div
+          className={`fixed bottom-6 right-6 z-30 items-center gap-3 rounded-lg border px-4 py-3 shadow-lg ${
+            mobileTab === "manage" ? "flex" : "hidden"
+          } lg:flex`}
+          style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
+        >
+          <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-secondary)" }}>
+            <CircleAlert size={14} style={{ color: "var(--series-2)" }} />
+            Unsaved changes
+          </span>
+          <button
+            type="button"
+            onClick={handleShareSave}
+            disabled={saving}
+            className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+            style={{ background: "var(--series-1)" }}
+          >
+            {saving && <Loader2 size={12} className="animate-spin" />}
+            Update link
+          </button>
+        </div>
+      )}
     </div>
   );
 }

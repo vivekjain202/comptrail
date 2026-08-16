@@ -24,6 +24,7 @@ export async function POST(request: Request) {
         editToken,
         title: payload.title,
         note: payload.note,
+        learnings: payload.learnings,
         currency: payload.currency,
         entries: payload.entries,
       });
