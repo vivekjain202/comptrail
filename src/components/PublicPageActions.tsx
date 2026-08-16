@@ -38,7 +38,7 @@ export default function PublicPageActions({ slug }: { slug: string }) {
         </button>
         {canEdit && (
           <Link
-            href={`/?slug=${slug}`}
+            href={`/app?slug=${slug}`}
             className="flex items-center rounded-md px-3 py-1.5 text-xs font-semibold text-white"
             style={{ background: "var(--series-1)" }}
           >

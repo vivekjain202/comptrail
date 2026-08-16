@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Footer from "@/components/Footer";
 import MilestoneChart from "@/components/MilestoneChart";
 import PreviewExport from "@/components/PreviewExport";
 import PublicPageActions from "@/components/PublicPageActions";
@@ -75,6 +76,8 @@ export default async function PublicTimelinePage({
           <TimelineView entries={row.entries} currency={row.currency} title={row.title} slug={slug} />
         </PreviewExport>
       </div>
+
+      <Footer />
     </div>
   );
 }
