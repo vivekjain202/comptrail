@@ -43,8 +43,12 @@ export function computeStats(entries: CompEntry[]): TimelineStats {
   const totalGrowthPct =
     firstComp > 0 ? ((lastComp - firstComp) / firstComp) * 100 : null;
 
+  // Below this span, annualizing blows up (1 / yearsSpanned explodes) and
+  // produces a meaningless number rather than a real annual rate.
+  const MIN_YEARS_FOR_CAGR = 0.25;
+
   const cagrPct =
-    firstComp > 0 && yearsSpanned > 0
+    firstComp > 0 && yearsSpanned >= MIN_YEARS_FOR_CAGR
       ? (Math.pow(lastComp / firstComp, 1 / yearsSpanned) - 1) * 100
       : null;
 

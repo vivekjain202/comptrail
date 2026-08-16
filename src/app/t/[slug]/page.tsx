@@ -2,7 +2,9 @@ import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MilestoneChart from "@/components/MilestoneChart";
+import PreviewExport from "@/components/PreviewExport";
 import PublicPageActions from "@/components/PublicPageActions";
+import ScrollToHash from "@/components/ScrollToHash";
 import StatsCards from "@/components/StatsCards";
 import TimelineView from "@/components/TimelineView";
 import { getDb } from "@/db/client";
@@ -58,11 +60,20 @@ export default async function PublicTimelinePage({
 
   return (
     <div className="h-full overflow-y-auto">
+      <ScrollToHash />
       <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-10">
         <PublicPageActions slug={slug} />
-        <StatsCards entries={row.entries} currency={row.currency} />
-        <MilestoneChart entries={row.entries} currency={row.currency} title={row.title} note={row.note} />
-        <TimelineView entries={row.entries} currency={row.currency} />
+        <PreviewExport filename={`${row.title}-full-preview`}>
+          <StatsCards entries={row.entries} currency={row.currency} />
+          <MilestoneChart
+            entries={row.entries}
+            currency={row.currency}
+            title={row.title}
+            note={row.note}
+            slug={slug}
+          />
+          <TimelineView entries={row.entries} currency={row.currency} title={row.title} slug={slug} />
+        </PreviewExport>
       </div>
     </div>
   );

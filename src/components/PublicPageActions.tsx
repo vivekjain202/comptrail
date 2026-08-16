@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Download } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getEditToken } from "@/lib/local-store";
@@ -36,14 +36,6 @@ export default function PublicPageActions({ slug }: { slug: string }) {
         >
           {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy link"}
         </button>
-        <a
-          href={`/api/timelines/${slug}/image`}
-          download={`${slug}.png`}
-          className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium"
-          style={{ borderColor: "var(--gridline)", color: "var(--text-secondary)" }}
-        >
-          <Download size={14} /> Download image
-        </a>
         {canEdit && (
           <Link
             href={`/?slug=${slug}`}

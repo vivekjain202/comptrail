@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Download, ExternalLink, Loader2 } from "lucide-react";
+import { Check, Copy, ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -68,15 +68,11 @@ export default function SharePanel({ slug, saving, error, onSave }: SharePanelPr
             >
               <ExternalLink size={12} /> View public page
             </Link>
-            <a
-              href={`/api/timelines/${slug}/image`}
-              download={`${slug}.png`}
-              className="flex items-center gap-1 font-medium"
-              style={{ color: "var(--series-1)" }}
-            >
-              <Download size={12} /> Download image
-            </a>
           </div>
+          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            Use the PNG/PDF buttons on the chart, timeline, or full preview to download images that match what you
+            see here.
+          </p>
         </div>
       )}
     </div>
