@@ -9,9 +9,11 @@ function toPublicShape(row: typeof timelines.$inferSelect) {
     slug: row.slug,
     title: row.title,
     note: row.note,
+    learnings: row.learnings,
     currency: row.currency,
     entries: row.entries,
     updatedAt: row.updatedAt,
+    viewCount: row.viewCount,
   };
 }
 
@@ -57,6 +59,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
     .set({
       title: payload.title,
       note: payload.note,
+      learnings: payload.learnings,
       currency: payload.currency,
       entries: payload.entries,
       updatedAt: new Date(),

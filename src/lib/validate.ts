@@ -6,6 +6,7 @@ const MAX_ENTRIES = 100;
 export interface TimelinePayload {
   title: string;
   note: string;
+  learnings: string;
   currency: string;
   entries: CompEntry[];
 }
@@ -20,6 +21,7 @@ export function parseTimelinePayload(body: unknown): TimelinePayload {
 
   const title = typeof b.title === "string" ? b.title.slice(0, 200) : "Salary Progression";
   const note = typeof b.note === "string" ? b.note.slice(0, 1000) : "";
+  const learnings = typeof b.learnings === "string" ? b.learnings.slice(0, 10000) : "";
   const currency = typeof b.currency === "string" && /^[A-Z]{3}$/.test(b.currency) ? b.currency : "USD";
 
   if (!Array.isArray(b.entries)) {
@@ -56,5 +58,5 @@ export function parseTimelinePayload(body: unknown): TimelinePayload {
     };
   });
 
-  return { title, note, currency, entries };
+  return { title, note, learnings, currency, entries };
 }

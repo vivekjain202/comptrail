@@ -1,11 +1,16 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Eye } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getEditToken } from "@/lib/local-store";
 
-export default function PublicPageActions({ slug }: { slug: string }) {
+interface PublicPageActionsProps {
+  slug: string;
+  viewCount: number;
+}
+
+export default function PublicPageActions({ slug, viewCount }: PublicPageActionsProps) {
   const [canEdit, setCanEdit] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -25,8 +30,11 @@ export default function PublicPageActions({ slug }: { slug: string }) {
       className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4"
       style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
     >
-      <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+      <p className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
         A shared salary progression timeline.
+        <span className="flex items-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
+          <Eye size={12} /> {viewCount} {viewCount === 1 ? "view" : "views"}
+        </span>
       </p>
       <div className="flex gap-2">
         <button
