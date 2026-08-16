@@ -4,7 +4,7 @@ import { CompEntry } from "@/lib/types";
 export const timelines = pgTable("timelines", {
   slug: text("slug").primaryKey(),
   editToken: text("edit_token").notNull(),
-  title: text("title").notNull().default("Salary Progression"),
+  title: text("title").notNull().default("CompTrail"),
   note: text("note").notNull().default(""),
   learnings: text("learnings").notNull().default(""),
   currency: text("currency").notNull().default("USD"),

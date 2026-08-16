@@ -33,7 +33,7 @@ export default function Home() {
   const [entries, setEntries] = useState<CompEntry[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("manage");
-  const [cardTitle, setCardTitle] = useState("Salary Progression");
+  const [cardTitle, setCardTitle] = useState("CompTrail");
   const [timelineNote, setTimelineNote] = useState("");
   const [learnings, setLearnings] = useState("");
   const [learningsDraft, setLearningsDraft] = useState("");
@@ -171,7 +171,7 @@ export default function Home() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
-              Salary Progression
+              CompTrail
             </h1>
             <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
               Build your career timeline and see it as a shareable progression chart.

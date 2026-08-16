@@ -59,7 +59,7 @@ export default function LandingPage() {
               changes, and relocations, rather than a single number frozen in time.
             </p>
             <p>
-              I built Salary Progression so anyone can plot that shape for themselves in a few
+              I built CompTrail so anyone can plot that shape for themselves in a few
               minutes and choose exactly how much of it to share. There&apos;s no login and no
               directory of companies or people — just a timeline you control, and a link you can
               hand to whoever might find it useful.

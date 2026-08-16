@@ -28,7 +28,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const row = await getTimeline(slug);
   if (!row) {
-    return { title: "Salary Progression" };
+    return { title: "CompTrail" };
   }
 
   const { meta: metaDescription, social: socialDescription } = buildTimelineDescriptions(
@@ -39,12 +39,12 @@ export async function generateMetadata({
   const imageUrl = `/api/timelines/${slug}/image`;
 
   return {
-    title: `${row.title} · Salary Progression`,
+    title: `${row.title} · CompTrail`,
     description: metaDescription,
     openGraph: {
       title: row.title,
       description: socialDescription,
-      siteName: "Salary Progression",
+      siteName: "CompTrail",
       type: "website",
       images: [{ url: imageUrl, width: 2400, height: 1260, type: "image/png" }],
     },

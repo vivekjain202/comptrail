@@ -19,7 +19,7 @@ export function parseTimelinePayload(body: unknown): TimelinePayload {
   }
   const b = body as Record<string, unknown>;
 
-  const title = typeof b.title === "string" ? b.title.slice(0, 200) : "Salary Progression";
+  const title = typeof b.title === "string" ? b.title.slice(0, 200) : "CompTrail";
   const note = typeof b.note === "string" ? b.note.slice(0, 1000) : "";
   const learnings = typeof b.learnings === "string" ? b.learnings.slice(0, 10000) : "";
   const currency = typeof b.currency === "string" && /^[A-Z]{3}$/.test(b.currency) ? b.currency : "USD";
