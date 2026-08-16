@@ -266,7 +266,7 @@ export default function Home() {
           <h2 className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
             Preview
           </h2>
-          <div className="flex min-h-0 flex-1 flex-col pb-6">
+          <div className="flex flex-1 flex-col pb-6">
             <PreviewExport filename={`${cardTitle}-full-preview`}>
               <StatsCards entries={entries} currency={currency} />
               <MilestoneChart
