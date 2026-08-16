@@ -8,7 +8,7 @@ import Collapsible from "@/components/Collapsible";
 import EntryForm from "@/components/EntryForm";
 import EntryManagerList from "@/components/EntryManagerList";
 import Footer from "@/components/Footer";
-import LearningsSection from "@/components/LearningsSection";
+import LearningsSection from "@/components/LearningsSection/LearningsSection";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import MilestoneChart from "@/components/MilestoneChart";
 import PreviewExport from "@/components/PreviewExport";

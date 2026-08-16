@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
-import LearningsSection from "@/components/LearningsSection";
+import LearningsSection from "@/components/LearningsSection/LearningsSection";
 import MilestoneChart from "@/components/MilestoneChart";
 import PreviewExport from "@/components/PreviewExport";
 import PublicPageActions from "@/components/PublicPageActions";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import CompBreakdownTooltip from "./CompBreakdownTooltip";
+import CompBreakdownTooltip from "./CompBreakdownTooltip/CompBreakdownTooltip";
 import ExportMenu from "./ExportMenu";
 import SectionShareButton from "./SectionShareButton";
 import { CompEntry, ENTRY_TYPE_LABELS } from "@/lib/types";
