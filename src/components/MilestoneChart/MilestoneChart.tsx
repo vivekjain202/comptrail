@@ -15,6 +15,9 @@ interface MilestoneChartProps {
   note: string;
   slug?: string | null;
   readOnly?: boolean;
+  // Compact marketing-page rendering: no title/legend header, and no forced
+  // min-width, so it never needs to horizontally scroll inside a narrow card.
+  preview?: boolean;
 }
 
 const SECTION_ID = "chart-section";
@@ -36,7 +39,15 @@ const CHART_BOTTOM_PCT = 12;
 const CHART_HEIGHT_PX = 220;
 const DOT_RADIUS_PX = 6;
 
-export default function MilestoneChart({ entries, currency, title, note, slug, readOnly = false }: MilestoneChartProps) {
+export default function MilestoneChart({
+  entries,
+  currency,
+  title,
+  note,
+  slug,
+  readOnly = false,
+  preview = false,
+}: MilestoneChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<{
     entry: CompEntry;
@@ -126,33 +137,37 @@ export default function MilestoneChart({ entries, currency, title, note, slug, r
           <ExportMenu getNode={() => containerRef.current} filename={`${title}-chart`} label="chart" />
         </div>
       )}
-      <div className="mb-1 text-center">
-        <h2
-          className="text-lg font-extrabold tracking-tight uppercase sm:text-xl"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {title}
-        </h2>
-        <p className="text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
-          {yearRange}
-        </p>
-      </div>
+      {!preview && (
+        <>
+          <div className="mb-1 text-center">
+            <h2
+              className="text-lg font-extrabold tracking-tight uppercase sm:text-xl"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {title}
+            </h2>
+            <p className="text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
+              {yearRange}
+            </p>
+          </div>
 
-      <div className="mb-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-        <span>All amounts in {currency}</span>
-        {hasPromotion && (
-          <LegendItem icon={<Star size={12} style={{ color: "var(--status-good)" }} />} label="Promotion" />
-        )}
-        {hasRelocation && (
-          <LegendItem icon={<MapPin size={12} style={{ color: "var(--series-2)" }} />} label="Relocation" />
-        )}
-        {hasBonus && (
-          <LegendItem icon={<Gift size={12} style={{ color: "var(--series-2)" }} />} label="One-time bonus" />
-        )}
-      </div>
+          <div className="mb-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
+            <span>All amounts in {currency}</span>
+            {hasPromotion && (
+              <LegendItem icon={<Star size={12} style={{ color: "var(--status-good)" }} />} label="Promotion" />
+            )}
+            {hasRelocation && (
+              <LegendItem icon={<MapPin size={12} style={{ color: "var(--series-2)" }} />} label="Relocation" />
+            )}
+            {hasBonus && (
+              <LegendItem icon={<Gift size={12} style={{ color: "var(--series-2)" }} />} label="One-time bonus" />
+            )}
+          </div>
+        </>
+      )}
 
-      <div className="overflow-x-auto">
-        <div style={{ minWidth: `${Math.max(n * 130, 480)}px` }}>
+      <div className={preview ? undefined : "overflow-x-auto"}>
+        <div style={preview ? undefined : { minWidth: `${Math.max(n * 130, 480)}px` }}>
           <div className="relative" style={{ height: CHART_HEIGHT_PX }}>
             <svg
               viewBox="0 0 100 100"
