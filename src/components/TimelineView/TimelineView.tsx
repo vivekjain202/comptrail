@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import CompBreakdownTooltip from "./CompBreakdownTooltip/CompBreakdownTooltip";
-import ExportMenu from "./ExportMenu";
-import SectionShareButton from "./SectionShareButton";
+import CompBreakdownTooltip from "../CompBreakdownTooltip/CompBreakdownTooltip";
+import ExportMenu from "../ExportMenu/ExportMenu";
+import SectionShareButton from "../SectionShareButton/SectionShareButton";
 import { CompEntry, ENTRY_TYPE_LABELS } from "@/lib/types";
 import { formatCurrency, formatPct, pctChange, sortByDate, totalComp } from "@/lib/calculations";
 

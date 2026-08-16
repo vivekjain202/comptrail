@@ -1,4 +1,4 @@
-import ViewTracker from "../../ViewTracker";
+import ViewTracker from "../ViewTracker";
 import { getEditToken } from "@/lib/local-store";
 import { render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

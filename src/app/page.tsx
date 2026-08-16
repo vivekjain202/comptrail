@@ -1,7 +1,7 @@
 import { ArrowRight, LineChart, Link2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import Footer from "@/components/Footer";
-import ThemeToggle from "@/components/ThemeToggle";
+import Footer from "@/components/Footer/Footer";
+import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
 
 export default function LandingPage() {
   return (

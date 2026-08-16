@@ -1,4 +1,4 @@
-import ExportMenu from "../../ExportMenu";
+import ExportMenu from "../ExportMenu";
 import { downloadElementAsPdf, downloadElementAsPng } from "@/lib/export";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

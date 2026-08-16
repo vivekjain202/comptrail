@@ -2,9 +2,9 @@
 
 import { Briefcase, Gift, Lightbulb, MapPin, Star } from "lucide-react";
 import { useRef, useState } from "react";
-import CompBreakdownTooltip from "./CompBreakdownTooltip/CompBreakdownTooltip";
-import ExportMenu from "./ExportMenu";
-import SectionShareButton from "./SectionShareButton";
+import CompBreakdownTooltip from "../CompBreakdownTooltip/CompBreakdownTooltip";
+import ExportMenu from "../ExportMenu/ExportMenu";
+import SectionShareButton from "../SectionShareButton/SectionShareButton";
 import { CompEntry, EntryType } from "@/lib/types";
 import { formatCompact, sortByDate, totalComp } from "@/lib/calculations";
 

@@ -1,4 +1,4 @@
-import TimelineView from "../../TimelineView";
+import TimelineView from "../TimelineView";
 import { CompEntry } from "@/lib/types";
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

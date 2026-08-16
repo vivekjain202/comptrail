@@ -1,15 +1,15 @@
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Footer from "@/components/Footer";
+import Footer from "@/components/Footer/Footer";
 import LearningsSection from "@/components/LearningsSection/LearningsSection";
-import MilestoneChart from "@/components/MilestoneChart";
-import PreviewExport from "@/components/PreviewExport";
-import PublicPageActions from "@/components/PublicPageActions";
-import ScrollToHash from "@/components/ScrollToHash";
-import StatsCards from "@/components/StatsCards";
-import TimelineView from "@/components/TimelineView";
-import ViewTracker from "@/components/ViewTracker";
+import MilestoneChart from "@/components/MilestoneChart/MilestoneChart";
+import PreviewExport from "@/components/PreviewExport/PreviewExport";
+import PublicPageActions from "@/components/PublicPageActions/PublicPageActions";
+import ScrollToHash from "@/components/ScrollToHash/ScrollToHash";
+import StatsCards from "@/components/StatsCards/StatsCards";
+import TimelineView from "@/components/TimelineView/TimelineView";
+import ViewTracker from "@/components/ViewTracker/ViewTracker";
 import { getDb } from "@/db/client";
 import { timelines } from "@/db/schema";
 

@@ -1,4 +1,4 @@
-import PublicPageActions from "../../PublicPageActions";
+import PublicPageActions from "../PublicPageActions";
 import { getEditToken } from "@/lib/local-store";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
