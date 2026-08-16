@@ -1,7 +1,6 @@
 import PublicPageActions from "../PublicPageActions";
 import { getEditToken } from "@/lib/local-store";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/local-store", () => ({ getEditToken: vi.fn() }));
@@ -35,16 +34,11 @@ describe("PublicPageActions", () => {
     expect(link).toHaveAttribute("href", "/app?slug=career");
   });
 
-  it("copies the current page link when Copy link is clicked", async () => {
-    const user = userEvent.setup();
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  it("does not render a copy link button", async () => {
     vi.mocked(getEditToken).mockReturnValue(null);
     render(<PublicPageActions slug="career" viewCount={1} />);
 
-    await user.click(screen.getByRole("button", { name: /Copy link/ }));
-
-    expect(writeText).toHaveBeenCalledWith(window.location.href);
-    expect(await screen.findByText("Copied")).toBeInTheDocument();
+    expect(await screen.findByText("1 view")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /copy link/i })).not.toBeInTheDocument();
   });
 });

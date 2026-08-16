@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/Footer";
 import LearningsSection from "@/components/LearningsSection/LearningsSection";
 import MilestoneChart from "@/components/MilestoneChart/MilestoneChart";
-import PreviewExport from "@/components/PreviewExport/PreviewExport";
 import PublicPageActions from "@/components/PublicPageActions/PublicPageActions";
 import ScrollToHash from "@/components/ScrollToHash/ScrollToHash";
+import SiteHeader from "@/components/SiteHeader/SiteHeader";
 import StatsCards from "@/components/StatsCards/StatsCards";
 import TimelineView from "@/components/TimelineView/TimelineView";
 import ViewTracker from "@/components/ViewTracker/ViewTracker";
@@ -65,9 +65,12 @@ export default async function PublicTimelinePage({
     <div className="h-full overflow-y-auto">
       <ScrollToHash />
       <ViewTracker slug={slug} />
-      <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-10">
-        <PublicPageActions slug={slug} viewCount={row.viewCount} />
-        <PreviewExport filename={`${row.title}-full-preview`}>
+      <SiteHeader sticky />
+      <div className="mx-auto flex max-w-6xl gap-6 px-6 py-10">
+        {/* Reserved for future ad placement — left gutter */}
+        <aside className="hidden w-40 shrink-0 xl:block" aria-hidden="true" />
+        <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
+          <PublicPageActions slug={slug} viewCount={row.viewCount} />
           <StatsCards entries={row.entries} currency={row.currency} />
           <MilestoneChart
             entries={row.entries}
@@ -75,10 +78,19 @@ export default async function PublicTimelinePage({
             title={row.title}
             note={row.note}
             slug={slug}
+            readOnly
           />
-          <TimelineView entries={row.entries} currency={row.currency} title={row.title} slug={slug} />
-          <LearningsSection learnings={row.learnings} slug={slug} />
-        </PreviewExport>
+          <TimelineView
+            entries={row.entries}
+            currency={row.currency}
+            title={row.title}
+            slug={slug}
+            readOnly
+          />
+          <LearningsSection learnings={row.learnings} slug={slug} readOnly />
+        </div>
+        {/* Reserved for future ad placement — right gutter */}
+        <aside className="hidden w-40 shrink-0 xl:block" aria-hidden="true" />
       </div>
 
       <Footer />

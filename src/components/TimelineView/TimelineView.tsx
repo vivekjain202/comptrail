@@ -12,11 +12,18 @@ interface TimelineViewProps {
   currency: string;
   title?: string;
   slug?: string | null;
+  readOnly?: boolean;
 }
 
 const SECTION_ID = "timeline-section";
 
-export default function TimelineView({ entries, currency, title = "Salary Progression", slug }: TimelineViewProps) {
+export default function TimelineView({
+  entries,
+  currency,
+  title = "Salary Progression",
+  slug,
+  readOnly = false,
+}: TimelineViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sorted = sortByDate(entries).reverse();
 
@@ -37,17 +44,19 @@ export default function TimelineView({ entries, currency, title = "Salary Progre
     <div
       ref={containerRef}
       id={SECTION_ID}
-      className="scroll-mt-4 rounded-lg border p-5"
+      className="scroll-mt-20 rounded-lg border p-5"
       style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
     >
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
           Timeline
         </h2>
-        <div className="flex items-center gap-1.5" data-export-ignore>
-          <SectionShareButton slug={slug} anchor={SECTION_ID} />
-          <ExportMenu getNode={() => containerRef.current} filename={`${title}-timeline`} label="timeline" />
-        </div>
+        {!readOnly && (
+          <div className="flex items-center gap-1.5" data-export-ignore>
+            <SectionShareButton slug={slug} anchor={SECTION_ID} />
+            <ExportMenu getNode={() => containerRef.current} filename={`${title}-timeline`} label="timeline" />
+          </div>
+        )}
       </div>
       <ol className="flex flex-col">
         {sorted.map((entry, i) => {

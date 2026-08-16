@@ -14,6 +14,7 @@ interface MilestoneChartProps {
   title: string;
   note: string;
   slug?: string | null;
+  readOnly?: boolean;
 }
 
 const SECTION_ID = "chart-section";
@@ -35,7 +36,7 @@ const CHART_BOTTOM_PCT = 12;
 const CHART_HEIGHT_PX = 220;
 const DOT_RADIUS_PX = 6;
 
-export default function MilestoneChart({ entries, currency, title, note, slug }: MilestoneChartProps) {
+export default function MilestoneChart({ entries, currency, title, note, slug, readOnly = false }: MilestoneChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<{
     entry: CompEntry;
@@ -116,13 +117,15 @@ export default function MilestoneChart({ entries, currency, title, note, slug }:
     <div
       ref={containerRef}
       id={SECTION_ID}
-      className="relative scroll-mt-4 rounded-lg border p-5 sm:p-6"
+      className="relative scroll-mt-20 rounded-lg border p-5 sm:p-6"
       style={{ borderColor: "var(--gridline)", background: "var(--surface-1)" }}
     >
-      <div className="absolute top-3 right-3 flex items-center gap-1.5" data-export-ignore>
-        <SectionShareButton slug={slug} anchor={SECTION_ID} />
-        <ExportMenu getNode={() => containerRef.current} filename={`${title}-chart`} label="chart" />
-      </div>
+      {!readOnly && (
+        <div className="absolute top-3 right-3 flex items-center gap-1.5" data-export-ignore>
+          <SectionShareButton slug={slug} anchor={SECTION_ID} />
+          <ExportMenu getNode={() => containerRef.current} filename={`${title}-chart`} label="chart" />
+        </div>
+      )}
       <div className="mb-1 text-center">
         <h2
           className="text-lg font-extrabold tracking-tight uppercase sm:text-xl"

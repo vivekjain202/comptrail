@@ -66,4 +66,10 @@ describe("TimelineView", () => {
     expect(within(items[0]).getByText("Equity")).toBeInTheDocument();
     expect(within(items[1]).getByLabelText("Engineer compensation breakdown")).toBeInTheDocument();
   });
+
+  it("hides the share and export actions in read-only mode", () => {
+    render(<TimelineView entries={entries} currency="USD" readOnly />);
+    expect(screen.queryByLabelText("Copy link to this section")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Download options for timeline")).not.toBeInTheDocument();
+  });
 });

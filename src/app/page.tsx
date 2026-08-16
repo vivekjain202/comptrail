@@ -1,28 +1,13 @@
 import { ArrowRight, LineChart, Link2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import Footer from "@/components/Footer/Footer";
-import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
+import SiteHeader from "@/components/SiteHeader/SiteHeader";
 
 export default function LandingPage() {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
+      <SiteHeader />
       <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
-        <header className="flex items-center justify-between">
-          <span className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-            Salary Progression
-          </span>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link
-              href="/app"
-              className="rounded-md px-3 py-1.5 text-sm font-semibold text-white"
-              style={{ background: "var(--series-1)" }}
-            >
-              Open the app
-            </Link>
-          </div>
-        </header>
-
         <section className="flex flex-col items-start gap-6 py-16 sm:py-20">
           <h1
             className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl"

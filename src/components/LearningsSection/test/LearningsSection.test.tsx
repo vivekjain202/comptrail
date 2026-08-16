@@ -15,4 +15,10 @@ describe("LearningsSection", () => {
     expect(screen.getByRole("heading", { name: "Negotiate" })).toBeInTheDocument();
     expect(screen.getByText("Always compare offers.")).toBeInTheDocument();
   });
+
+  it("hides the share and export actions in read-only mode", () => {
+    render(<LearningsSection learnings="Always compare offers." readOnly />);
+    expect(screen.queryByLabelText("Copy link to this section")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Download options for career learnings")).not.toBeInTheDocument();
+  });
 });
