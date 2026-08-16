@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -53,7 +54,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="flex h-dvh flex-col overflow-hidden">{children}</body>
+      <body className="flex h-dvh flex-col overflow-hidden">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
