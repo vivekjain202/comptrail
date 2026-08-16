@@ -2,13 +2,18 @@ import { ImageResponse } from "next/og";
 import { CompEntry, EntryType } from "./types";
 import { formatCompact, sortByDate, totalComp } from "./calculations";
 
-const WIDTH = 1200;
-const HEIGHT = 630;
+// Rendered at 2x the nominal 1200x630 OG size. Social crawlers (LinkedIn in
+// particular) re-compress/re-scale preview images quite aggressively, and a
+// higher native resolution source holds up much better than exactly the
+// minimum size — the declared og:image dimensions below are scaled to match.
+const SCALE = 2;
+const WIDTH = 1200 * SCALE;
+const HEIGHT = 630 * SCALE;
 const MAX_POINTS = 8;
-const CHART_HEIGHT = 410;
+const CHART_HEIGHT = 410 * SCALE;
 const CHART_TOP_PCT = 38;
 const CHART_BOTTOM_PCT = 10;
-const DOT_SIZE = 18;
+const DOT_SIZE = 18 * SCALE;
 const DOT_RADIUS = DOT_SIZE / 2;
 
 const STATUS_GOOD = "#0ca30c";
@@ -104,15 +109,15 @@ export function renderTimelineImage(params: {
           justifyContent: "center",
           position: "relative",
           backgroundColor: "#1a1a19",
-          paddingTop: 48,
-          paddingLeft: 48,
-          paddingRight: 48,
-          paddingBottom: 88,
+          paddingTop: 48 * SCALE,
+          paddingLeft: 48 * SCALE,
+          paddingRight: 48 * SCALE,
+          paddingBottom: 88 * SCALE,
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
         {n === 0 ? (
-          <div style={{ display: "flex", fontSize: 28, color: "#898781" }}>No career events yet.</div>
+          <div style={{ display: "flex", fontSize: 28 * SCALE, color: "#898781" }}>No career events yet.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ position: "relative", display: "flex", width: "100%", height: CHART_HEIGHT }}>
@@ -146,7 +151,7 @@ export function renderTimelineImage(params: {
                         height: DOT_SIZE,
                         borderRadius: 999,
                         background: p.color,
-                        border: "3px solid #1a1a19",
+                        border: `${3 * SCALE}px solid #1a1a19`,
                       }}
                     />
                     <div
@@ -157,31 +162,31 @@ export function renderTimelineImage(params: {
                         left: "50%",
                         width: 0,
                         height: connectorHeight,
-                        borderLeft: "2.5px dashed #383835",
+                        borderLeft: `${2.5 * SCALE}px dashed #383835`,
                       }}
                     />
                     <div
                       style={{
                         display: "flex",
                         position: "absolute",
-                        bottom: DOT_SIZE + 12,
+                        bottom: DOT_SIZE + 12 * SCALE,
                         left: "50%",
                         transform: "translateX(-50%)",
                         flexDirection: "column",
                         alignItems: "center",
-                        gap: 6,
+                        gap: 6 * SCALE,
                       }}
                     >
-                      {Icon && <Icon size={26} color={p.color} />}
+                      {Icon && <Icon size={26 * SCALE} color={p.color} />}
                       <div
                         style={{
                           display: "flex",
                           color: "#ffffff",
                           background: p.color,
-                          fontSize: 24,
+                          fontSize: 24 * SCALE,
                           fontWeight: 700,
-                          padding: "8px 16px",
-                          borderRadius: 10,
+                          padding: `${8 * SCALE}px ${16 * SCALE}px`,
+                          borderRadius: 10 * SCALE,
                           whiteSpace: "nowrap",
                         }}
                       >
@@ -193,7 +198,7 @@ export function renderTimelineImage(params: {
               })}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "row", marginTop: 24 }}>
+            <div style={{ display: "flex", flexDirection: "row", marginTop: 24 * SCALE }}>
               {points.map((p) => (
                 <div
                   key={p.entry.id}
@@ -201,7 +206,7 @@ export function renderTimelineImage(params: {
                     display: "flex",
                     flex: 1,
                     justifyContent: "center",
-                    fontSize: 22,
+                    fontSize: 22 * SCALE,
                     fontWeight: 600,
                     color: "#ffffff",
                   }}
@@ -217,13 +222,13 @@ export function renderTimelineImage(params: {
           style={{
             display: "flex",
             position: "absolute",
-            bottom: 28,
+            bottom: 28 * SCALE,
             left: 0,
             right: 0,
             alignItems: "center",
             justifyContent: "center",
-            gap: 8,
-            fontSize: 20,
+            gap: 8 * SCALE,
+            fontSize: 20 * SCALE,
             fontWeight: 600,
             color: "#ffffff",
           }}

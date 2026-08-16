@@ -30,7 +30,7 @@ export default function TimelineView({
   if (sorted.length === 0) {
     return (
       <div
-        className="flex h-40 items-center justify-center rounded-lg border text-sm"
+        className="flex min-h-40 flex-1 items-center justify-center rounded-lg border text-sm"
         style={{ borderColor: "var(--gridline)", background: "var(--surface-1)", color: "var(--text-muted)" }}
       >
         Your timeline will appear here.

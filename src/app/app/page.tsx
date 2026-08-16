@@ -21,6 +21,14 @@ import { CompEntry } from "@/lib/types";
 
 type MobileTab = "manage" | "preview";
 
+const LEARNINGS_TEMPLATE = `## 💡 What moved the needle
+
+- _What raises, promotions, or job changes had the biggest impact — and why?_
+
+## 🎯 Advice for anyone earlier in their career
+
+- _What would you tell someone just starting out, based on what worked for you?_`;
+
 export default function Home() {
   const [entries, setEntries] = useState<CompEntry[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -236,6 +244,7 @@ export default function Home() {
               onDiscard={() => setLearningsDraft(learnings)}
               hasChanges={learningsDraft !== learnings}
               placeholder="What choices, skills, or decisions shaped your career? Markdown supported."
+              template={LEARNINGS_TEMPLATE}
             />
           </Collapsible>
 
@@ -257,7 +266,7 @@ export default function Home() {
           <h2 className="text-xs font-semibold tracking-wide uppercase" style={{ color: "var(--text-muted)" }}>
             Preview
           </h2>
-          <div className="pb-6">
+          <div className="flex min-h-0 flex-1 flex-col pb-6">
             <PreviewExport filename={`${cardTitle}-full-preview`}>
               <StatsCards entries={entries} currency={currency} />
               <MilestoneChart

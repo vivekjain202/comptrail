@@ -46,7 +46,7 @@ export async function generateMetadata({
       description: socialDescription,
       siteName: "Salary Progression",
       type: "website",
-      images: [{ url: imageUrl, width: 1200, height: 630 }],
+      images: [{ url: imageUrl, width: 2400, height: 1260, type: "image/png" }],
     },
     twitter: {
       card: "summary_large_image",
@@ -73,10 +73,10 @@ export default async function PublicTimelinePage({
       <ScrollToHash />
       <ViewTracker slug={slug} />
       <SiteHeader sticky />
-      <div className="mx-auto flex max-w-6xl gap-6 px-6 py-10">
+      <div className="mx-auto flex max-w-[1800px] gap-6 px-6 py-10">
         {/* Reserved for future ad placement — left gutter */}
-        <aside className="hidden w-40 shrink-0 xl:block" aria-hidden="true" />
-        <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
+        <aside className="hidden w-48 shrink-0 2xl:block" aria-hidden="true" />
+        <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6 lg:max-w-5xl xl:max-w-6xl 2xl:max-w-none">
           <PublicPageActions slug={slug} viewCount={row.viewCount} />
           <StatsCards entries={row.entries} currency={row.currency} />
           <MilestoneChart
@@ -97,7 +97,7 @@ export default async function PublicTimelinePage({
           <LearningsSection learnings={row.learnings} slug={slug} readOnly />
         </div>
         {/* Reserved for future ad placement — right gutter */}
-        <aside className="hidden w-40 shrink-0 xl:block" aria-hidden="true" />
+        <aside className="hidden w-48 shrink-0 2xl:block" aria-hidden="true" />
       </div>
 
       <Footer />
