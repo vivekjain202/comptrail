@@ -9,7 +9,12 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme | null>(null);
 
   useEffect(() => {
-    setTheme((document.documentElement.getAttribute("data-theme") as Theme | null) ?? "light");
+    const attr = document.documentElement.getAttribute("data-theme") as Theme | null;
+    if (attr) {
+      setTheme(attr);
+    } else {
+      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
   }, []);
 
   function toggle() {

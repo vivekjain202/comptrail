@@ -172,7 +172,7 @@ export default function Home() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
-              CompTrail
+              <Link href="/">CompTrail</Link>
             </h1>
             <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
               Build your career timeline and see it as a shareable progression chart.
